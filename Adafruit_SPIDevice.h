@@ -3,16 +3,15 @@
 
 #include <Arduino.h>
 
-#if !defined(SPI_INTERFACES_COUNT) ||                                          \
-    (defined(SPI_INTERFACES_COUNT) && (SPI_INTERFACES_COUNT > 0))
+// #if !defined(SPI_INTERFACES_COUNT) || (defined(SPI_INTERFACES_COUNT) && (SPI_INTERFACES_COUNT > 0))
 // HW SPI available
-#include <SPI.h>
-#define BUSIO_HAS_HW_SPI
-#else
+// #include <SPI.h>
+// #define BUSIO_HAS_HW_SPI
+// #else
 // SW SPI ONLY
 enum { SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3 };
 typedef uint8_t SPIClass;
-#endif
+// #endif
 
 // some modern SPI definitions don't have BitOrder enum
 #if (defined(__AVR__) && !defined(ARDUINO_ARCH_MEGAAVR)) ||                    \
