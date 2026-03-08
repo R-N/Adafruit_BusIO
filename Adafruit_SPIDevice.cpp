@@ -1,3 +1,11 @@
+
+#ifdef TARGET_TUYA
+#undef SPI_MODE0
+#undef SPI_MODE1
+#undef SPI_MODE2
+#undef SPI_MODE3
+#undef BUSIO_HAS_HW_SPI
+#endif
 #include "Adafruit_SPIDevice.h"
 
 // #define DEBUG_SERIAL Serial
@@ -32,7 +40,7 @@
 Adafruit_SPIDevice::Adafruit_SPIDevice(int8_t cspin, uint32_t freq,
                                        BusIOBitOrder dataOrder,
                                        uint8_t dataMode, SPIClass *theSPI) {
-#ifdef BUSIO_HAS_HW_SPI
+#if !defined(TARGET_TUYA) && defined(BUSIO_HAS_HW_SPI)
   _cs = cspin;
   _sck = _mosi = _miso = -1;
   _spi = theSPI;
@@ -114,7 +122,7 @@ bool Adafruit_SPIDevice::begin(void) {
   }
 
   if (_spi) { // hardware SPI
-#ifdef BUSIO_HAS_HW_SPI
+#if !defined(TARGET_TUYA) && defined(BUSIO_HAS_HW_SPI)
     _spi->begin();
 #endif
   } else {
@@ -151,7 +159,7 @@ void Adafruit_SPIDevice::transfer(uint8_t *buffer, size_t len) {
   // HARDWARE SPI
   //
   if (_spi) {
-#ifdef BUSIO_HAS_HW_SPI
+#if !defined(TARGET_TUYA) && defined(BUSIO_HAS_HW_SPI)
 #if defined(SPARK)
     _spi->transfer(buffer, buffer, len, nullptr);
 #elif defined(STM32)
@@ -286,7 +294,7 @@ uint8_t Adafruit_SPIDevice::transfer(uint8_t send) {
  */
 void Adafruit_SPIDevice::beginTransaction(void) {
   if (_spi) {
-#ifdef BUSIO_HAS_HW_SPI
+#if !defined(TARGET_TUYA) && defined(BUSIO_HAS_HW_SPI)
     _spi->beginTransaction(*_spiSetting);
 #endif
   }
@@ -297,7 +305,7 @@ void Adafruit_SPIDevice::beginTransaction(void) {
  */
 void Adafruit_SPIDevice::endTransaction(void) {
   if (_spi) {
-#ifdef BUSIO_HAS_HW_SPI
+#if !defined(TARGET_TUYA) && defined(BUSIO_HAS_HW_SPI)
     _spi->endTransaction();
 #endif
   }
@@ -350,7 +358,7 @@ bool Adafruit_SPIDevice::write(const uint8_t *buffer, size_t len,
   beginTransactionWithAssertingCS();
 
   // do the writing
-#if defined(ARDUINO_ARCH_ESP32)
+#if !defined(TARGET_TUYA) && defined(ARDUINO_ARCH_ESP32) && defined(BUSIO_HAS_HW_SPI)
   if (_spi) {
     if (prefix_len > 0) {
       _spi->transferBytes((uint8_t *)prefix_buffer, nullptr, prefix_len);
@@ -444,7 +452,7 @@ bool Adafruit_SPIDevice::write_then_read(const uint8_t *write_buffer,
                                          size_t read_len, uint8_t sendvalue) {
   beginTransactionWithAssertingCS();
   // do the writing
-#if defined(ARDUINO_ARCH_ESP32)
+#if !defined(TARGET_TUYA) && defined(ARDUINO_ARCH_ESP32) && defined(BUSIO_HAS_HW_SPI)
   if (_spi) {
     if (write_len > 0) {
       _spi->transferBytes((uint8_t *)write_buffer, nullptr, write_len);
